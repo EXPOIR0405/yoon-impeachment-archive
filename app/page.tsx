@@ -1,5 +1,3 @@
-
-
 import VideoSection from './components/VideoSection'
 import TimelineSection from './components/TimelineSection'
 import PoliticiansSection from './components/PoliticiansSection'

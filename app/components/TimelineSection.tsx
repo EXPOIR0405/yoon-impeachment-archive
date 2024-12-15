@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { timelineData } from '@/app/data/timeline'
 import Image from 'next/image'
@@ -37,7 +37,9 @@ export default function TimelineSection() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedItems, setExpandedItems] = useState<string[]>([])
-
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
+  
   const toggleItem = (id: string) => {
     setExpandedItems(prev => 
       prev.includes(id) 
@@ -45,6 +47,14 @@ export default function TimelineSection() {
         : [...prev, id]
     )
   }
+
+  // 페이지 변경시 스크롤 위치 유지
+  useEffect(() => {
+    window.scrollTo({
+      top: window.scrollY,
+      behavior: 'instant'
+    })
+  }, [currentPage])
 
   const filteredData = timelineData.filter(item => {
     // 시기 필터링
@@ -77,9 +87,24 @@ export default function TimelineSection() {
     return true
   })
 
+  // 전체 페이지 수 계산
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+  
+  // 현재 페이지에 해당하는 데이터만 추출
+  const currentItems = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
+
+  // 페이지 변경 핸들러 - 스크롤 제거
+  const handlePageChange = (pageNumber: number, e: React.MouseEvent) => {
+    e.preventDefault() // 기본 동작 방지
+    setCurrentPage(pageNumber)
+  }
+
   return (
     <section className="bg-gray-50 py-20">
-      <div className="container mx-auto px-4">
+      <div key={currentPage} className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-2 text-gray-900">
           윤석열 정부 2년 7개월의 기록
         </h2>
@@ -141,8 +166,11 @@ export default function TimelineSection() {
         </div>
 
         {/* 타임라인 */}
-        <div className="relative border-l-2 border-gray-200 ml-4">
-          {filteredData.map((item, index) => (
+        <div 
+          key={`timeline-${currentPage}`} 
+          className="relative border-l-2 border-gray-200 ml-4 min-h-[600px]"
+        >
+          {currentItems.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, x: -20 }}
@@ -228,6 +256,70 @@ export default function TimelineSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* 페이지네이션 */}
+        {totalPages > 1 && (
+          <div className="flex justify-center gap-2 mt-12">
+            <button
+              type="button"
+              onClick={(e) => handlePageChange(currentPage - 1, e)}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-lg ${
+                currentPage === 1
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-900 text-white hover:bg-gray-800'
+              }`}
+            >
+              이전
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(pageNum => {
+                return (
+                  pageNum === 1 ||
+                  pageNum === totalPages ||
+                  Math.abs(pageNum - currentPage) <= 2
+                )
+              })
+              .map((pageNum, index, array) => {
+                if (index > 0 && pageNum - array[index - 1] > 1) {
+                  return (
+                    <span key={`ellipsis-${pageNum}`} className="px-4 py-2">
+                      ...
+                    </span>
+                  )
+                }
+
+                return (
+                  <button
+                    type="button"
+                    key={pageNum}
+                    onClick={(e) => handlePageChange(pageNum, e)}
+                    className={`px-4 py-2 rounded-lg ${
+                      currentPage === pageNum
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+
+            <button
+              type="button"
+              onClick={(e) => handlePageChange(currentPage + 1, e)}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 rounded-lg ${
+                currentPage === totalPages
+                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-900 text-white hover:bg-gray-800'
+              }`}
+            >
+              다음
+            </button>
+          </div>
+        )}
       </div>
     </section>
   )
