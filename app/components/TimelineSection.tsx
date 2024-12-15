@@ -5,9 +5,13 @@ import { motion } from 'framer-motion'
 import { timelineData } from '@/app/data/timeline'
 import Image from 'next/image'
 import { FiSearch } from 'react-icons/fi'
+import { HiChevronDown, HiChevronRight } from 'react-icons/hi'
+
 
 const timeFilters = [
   { id: 'all', name: '전체' },
+  { id: '2021-1', name: '2021 상반기' },
+  { id: '2021-2', name: '2021 하반기' },
   { id: '2022-1', name: '2022 상반기' },
   { id: '2022-2', name: '2022 하반기' },
   { id: '2023-1', name: '2023 상반기' },
@@ -24,13 +28,23 @@ const categories = [
   { id: 'diplomacy', name: '외교 실패', color: 'bg-green-500' },
   { id: 'personnel', name: '인사 참사', color: 'bg-pink-500' },
   { id: 'corruption', name: '비리/부패', color: 'bg-orange-500' },
-  { id: 'prosecution', name: '검찰공화국', color: 'bg-indigo-500' }
+  { id: 'prosecution', name: '검찰공화국', color: 'bg-indigo-500' },
+  { id: 'history', name: '역사왜곡', color: 'bg-black' },
 ]
 
 export default function TimelineSection() {
   const [selectedTime, setSelectedTime] = useState('all')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [expandedItems, setExpandedItems] = useState<string[]>([])
+
+  const toggleItem = (id: string) => {
+    setExpandedItems(prev => 
+      prev.includes(id) 
+        ? prev.filter(itemId => itemId !== id)
+        : [...prev, id]
+    )
+  }
 
   const filteredData = timelineData.filter(item => {
     // 시기 필터링
@@ -66,15 +80,18 @@ export default function TimelineSection() {
   return (
     <section className="bg-gray-50 py-20">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8 text-gray-900">
+        <h2 className="text-3xl font-bold mb-2 text-gray-900">
           윤석열 정부 2년 7개월의 기록
         </h2>
+        <p className="text-sm text-gray-600 mb-8">
+        대통령 후보 시절의 발언까지 담았습니다.
+        </p>
 
         {/* 검색 필터 - 돋보기 아이콘 추가 */}
         <div className="mb-8 relative">
           <input
             type="text"
-            placeholder="검색하고 싶은 키워드를 적어주세요"
+            placeholder="검색하고 싶은 단어를 적어주세요"
             className="text-black w-full max-w-md px-4 py-2 pl-10 rounded-lg border"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -150,45 +167,64 @@ export default function TimelineSection() {
                   )
                 })}
               </div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900">
-                {item.title}
-              </h3>
-              <p className="text-gray-700 mb-4 whitespace-pre-wrap">
-                {item.content}
-              </p>
-              {item.media && (
-                <div className="mb-4 grid gap-4 grid-cols-2">
-                  {item.media.map((media, idx) => (
-                    <div key={idx} className="rounded-lg overflow-hidden">
-                      {media.type === 'image' && (
-                        <div className="relative h-48">
-                          <Image
-                            src={media.url}
-                            alt={media.caption || ''}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      )}
-                      {media.caption && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          {media.caption}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="flex gap-2 items-center">
-                <a 
-                  href={item.source.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline"
+              <h3 
+                 className="text-xl font-bold mb-2 text-gray-900 cursor-pointer hover:text-gray-700 flex items-center group"
+                 onClick={() => toggleItem(item.id)}
+               >
+                 <span className="flex-grow">{item.title}</span>
+                 <span className="text-gray-400 group-hover:text-gray-600 transition-colors">
+                   {expandedItems.includes(item.id) 
+                     ? <HiChevronDown className="w-5 h-5" />
+                     : <HiChevronRight className="w-5 h-5" />
+                   }
+                 </span>
+               </h3>
+              
+              {expandedItems.includes(item.id) && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  출처: {item.source.name}
-                </a>
-              </div>
+                  <p className="text-gray-700 mb-4 whitespace-pre-wrap">
+                    {item.content}
+                  </p>
+                  {item.media && (
+                    <div className="mb-4 grid gap-4 grid-cols-2">
+                      {item.media.map((media, idx) => (
+                        <div key={idx} className="rounded-lg overflow-hidden">
+                          {media.type === 'image' && (
+                            <div className="relative h-48">
+                              <Image
+                                src={media.url}
+                                alt={media.caption || ''}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          {media.caption && (
+                            <p className="text-sm text-gray-500 mt-1">
+                              {media.caption}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex gap-2 items-center">
+                    <a 
+                      href={item.source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      출처: {item.source.name}
+                    </a>
+                  </div>
+                </motion.div>
+              )}
             </motion.div>
           ))}
         </div>
