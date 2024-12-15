@@ -67,7 +67,7 @@ export default function TimelineSection() {
     <section className="bg-gray-50 py-20">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8 text-gray-900">
-          윤석열 정부 2년 6개월의 기록
+          윤석열 정부 2년 7개월의 기록
         </h2>
 
         {/* 검색 필터 - 돋보기 아이콘 추가 */}
