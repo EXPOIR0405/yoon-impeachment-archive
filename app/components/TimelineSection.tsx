@@ -105,23 +105,28 @@ export default function TimelineSection() {
   return (
     <section className="bg-gray-50 py-20">
       <div key={currentPage} className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-2 text-gray-900">
+        <h2 className="text-2xl font-bold mb-2 text-gray-900">
           윤석열 정부 2년 7개월의 기록
         </h2>
         <p className="text-sm text-gray-600 mb-8">
         대통령 후보 시절의 발언까지 담았습니다.
         </p>
 
-        {/* 검색 필터 - 돋보기 아이콘 추가 */}
-        <div className="mb-8 relative">
-          <input
-            type="text"
-            placeholder="검색하고 싶은 단어를 적어주세요"
-            className="text-black w-full max-w-md px-4 py-2 pl-10 rounded-lg border"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        {/* 검색 필터와 총 게시글 수 */}
+        <div className="mb-8 flex items-center gap-4">
+          <div className="relative flex-1 max-w-md">
+            <input
+              type="text"
+              placeholder="검색할 단어를 적어주세요"
+              className="text-black w-full px-4 py-2 pl-10 rounded-lg border"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          </div>
+          <div className="text-sm text-gray-600">
+            총 <span className="font-bold text-gray-900">{filteredData.length}</span>개의 기록이 있습니다.
+          </div>
         </div>
 
         {/* 시기 필터 - 모바일에서 숨김 */}

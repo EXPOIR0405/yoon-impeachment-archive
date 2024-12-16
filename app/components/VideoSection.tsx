@@ -58,7 +58,7 @@ export default function VideoSection() {
           <p className="text-sm md:text-base mb-2 opacity-80">
             2024.12.14. 17시 30분
           </p>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-center">
             윤석열 대통령 탄핵
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-2xl text-center leading-relaxed h-8">
