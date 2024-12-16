@@ -27,7 +27,7 @@ const categories = [
   { id: 'economy', name: '경제 실패', color: 'bg-blue-500' },
   { id: 'diplomacy', name: '외교 실패', color: 'bg-green-500' },
   { id: 'personnel', name: '인사 참사', color: 'bg-pink-500' },
-  { id: 'corruption', name: '비리/부패', color: 'bg-orange-500' },
+  { id: 'censorship', name: '검열/탄압', color: 'bg-orange-500' },
   { id: 'prosecution', name: '검찰공화국', color: 'bg-indigo-500' },
   { id: 'history', name: '역사왜곡', color: 'bg-black' },
 ]
@@ -289,7 +289,7 @@ export default function TimelineSection() {
               .map((pageNum, index, array) => {
                 if (index > 0 && pageNum - array[index - 1] > 1) {
                   return (
-                    <span key={`ellipsis-${pageNum}`} className="px-4 py-2">
+                    <span key={`ellipsis-${pageNum}`} className="px-4 py-2 text-black">
                       ...
                     </span>
                   )
