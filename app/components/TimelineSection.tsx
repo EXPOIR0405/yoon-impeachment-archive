@@ -265,12 +265,12 @@ export default function TimelineSection() {
 
         {/* 페이지네이션 */}
         {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-12">
+          <div className="flex flex-wrap justify-center gap-2 mt-12">
             <button
               type="button"
               onClick={(e) => handlePageChange(currentPage - 1, e)}
               disabled={currentPage === 1}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg ${
                 currentPage === 1
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   : 'bg-gray-900 text-white hover:bg-gray-800'
@@ -281,42 +281,33 @@ export default function TimelineSection() {
 
             {Array.from({ length: totalPages }, (_, i) => i + 1)
               .filter(pageNum => {
-                return (
-                  pageNum === 1 ||
-                  pageNum === totalPages ||
-                  Math.abs(pageNum - currentPage) <= 2
-                )
+                // 5개씩 묶어서 보여주기
+                const pageGroup = Math.ceil(currentPage / 5);
+                const start = (pageGroup - 1) * 5 + 1;
+                const end = Math.min(pageGroup * 5, totalPages);
+                
+                return pageNum >= start && pageNum <= end;
               })
-              .map((pageNum, index, array) => {
-                if (index > 0 && pageNum - array[index - 1] > 1) {
-                  return (
-                    <span key={`ellipsis-${pageNum}`} className="px-4 py-2 text-black">
-                      ...
-                    </span>
-                  )
-                }
-
-                return (
-                  <button
-                    type="button"
-                    key={pageNum}
-                    onClick={(e) => handlePageChange(pageNum, e)}
-                    className={`px-4 py-2 rounded-lg ${
-                      currentPage === pageNum
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                )
-              })}
+              .map((pageNum) => (
+                <button
+                  type="button"
+                  key={`page-${pageNum}`}
+                  onClick={(e) => handlePageChange(pageNum, e)}
+                  className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg ${
+                    currentPage === pageNum
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
 
             <button
               type="button"
               onClick={(e) => handlePageChange(currentPage + 1, e)}
               disabled={currentPage === totalPages}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-3 py-1 sm:px-4 sm:py-2 rounded-lg ${
                 currentPage === totalPages
                   ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   : 'bg-gray-900 text-white hover:bg-gray-800'
